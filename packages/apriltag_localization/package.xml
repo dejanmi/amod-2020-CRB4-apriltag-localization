@@ -1,0 +1,11 @@
+<package>
+  <name>apriltag_localization</name>
+  <version>0.1.0</version>
+  <description>
+  CRA2 .
+  </description>
+  <maintainer email="milojevic.de@gmail.com">Dejan Milojevic</maintainer>
+  <license>None</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
