@@ -3,25 +3,21 @@ import numpy as np
 import cv2
 import rospy
 from duckietown.dtros import DTROS, NodeType
-from duckietown_msgs.msg import Twist2DStamped, WheelEncoderStamped, WheelsCmdStamped
 from geometry_msgs.msg import TransformStamped, Quaternion, Vector3, Transform
 from tf.transformations import quaternion_from_matrix, quaternion_from_euler, rotation_matrix
 import tf
 import tf2_ros
-import rospkg
 from dt_apriltags import Detector
 from sensor_msgs.msg import CompressedImage, CameraInfo
 from cv_bridge import CvBridge, CvBridgeError
 
-from geometry import SE2, SE3, SE2_from_xytheta, rotation_translation_from_SE3, SE3_from_rotation_translation, \
-    SE2_from_rotation_translation, SE3_from_SE2, angle_from_SE2, translation_from_SE2, rotation_from_axis_angle
+from geometry import SE3, rotation_translation_from_SE3, SE3_from_rotation_translation, rotation_from_axis_angle
 
 
 class ApriltagLocalizationNode(DTROS):
 
     def __init__(self, node_name):
 
-        # Initialize the DTROS parent class
         super(ApriltagLocalizationNode, self).__init__(node_name=node_name,node_type=NodeType.GENERIC)
         self.veh_name = rospy.get_namespace().strip("/")
         self.radius = rospy.get_param(f'/{self.veh_name}/kinematics_node/radius', 100)
@@ -29,6 +25,7 @@ class ApriltagLocalizationNode(DTROS):
 
         self.bridge = CvBridge()
         self.image = None
+        self.image_timestamp = rospy.Time.now()
         self.cam_info = None
         self.camera_info_received = False
         self.at_detector = Detector(families='tag36h11',
@@ -104,8 +101,6 @@ class ApriltagLocalizationNode(DTROS):
             return
 
         self.image = image
-        self.image_height = np.shape(image)[0]
-        self.image_width = np.shape(image)[1]
         self.image_timestamp = image_msg.header.stamp
 
     def cb_camera_info(self, msg):
