@@ -2,8 +2,10 @@
   <arg name="veh"/>
   <arg name="pkg_name" value="at_localization"/>
   <arg name="node_name" default="apriltag_localization_node"/>
+  <arg name="rectify" default="true" />
   <group ns="$(arg veh)">
     <node pkg="$(arg pkg_name)" type="$(arg node_name).py" name="$(arg node_name)" output="screen">
+        <param name="rectify" type="bool" value="$(arg rectify)" />
     </node>
   </group>
 

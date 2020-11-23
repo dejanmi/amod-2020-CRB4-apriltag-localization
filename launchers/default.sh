@@ -13,7 +13,7 @@ dt-launchfile-init
 # NOTE: Use `dt-exec COMMAND` to run the main process (blocking process)
 
 # launching app
-dt-exec roslaunch at_localization apriltag_localization.launch veh:="$VEHICLE_NAME"
+dt-exec roslaunch at_localization apriltag_localization.launch veh:="$VEHICLE_NAME" rectify:="true"
 
 
 # ----------------------------------------------------------------------------

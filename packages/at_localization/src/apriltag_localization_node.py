@@ -22,7 +22,7 @@ class ApriltagLocalizationNode(DTROS):
         self.veh_name = rospy.get_namespace().strip("/")
         self.radius = rospy.get_param(f'/{self.veh_name}/kinematics_node/radius', 100)
         self.baseline = 0.0968
-
+        self.rectify_flag = rospy.get_param(f'/{self.veh_name}/{node_name}/rectify', 100)
         self.bridge = CvBridge()
         self.image = None
         self.image_timestamp = rospy.Time.now()
@@ -174,7 +174,8 @@ class ApriltagLocalizationNode(DTROS):
             if not self.camera_info_received:
                 continue
 
-            self.rectify_image()
+            if self.rectify_flag:
+                self.rectify_image()
             list_pose_tag = self.detect_april_tag()
             if not list_pose_tag:
                 continue
@@ -203,5 +204,6 @@ if __name__ == '__main__':
     # Initialize the node
     apriltag_node = ApriltagLocalizationNode(node_name='encoder_localization_node')
     apriltag_node.run()
+    rospy.on_shutdown(apriltag_node.onShutdown)
     # Keep it spinning to keep the node alive
     rospy.spin()
