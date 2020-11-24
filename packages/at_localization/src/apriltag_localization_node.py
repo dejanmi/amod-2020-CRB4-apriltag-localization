@@ -28,6 +28,7 @@ class ApriltagLocalizationNode(DTROS):
         self.image_timestamp = rospy.Time.now()
         self.cam_info = None
         self.camera_info_received = False
+        self.newCameraMatrix = None
         self.at_detector = Detector(families='tag36h11',
                                     nthreads=1,
                                     quad_decimate=1.0,
@@ -110,7 +111,10 @@ class ApriltagLocalizationNode(DTROS):
         self.camera_info_received = True
 
     def detect_april_tag(self):
-        K = np.array(self.cam_info.K).reshape((3, 3))
+        if self.rectify_flag:
+            K = self.newCameraMatrix
+        else:
+            K = np.array(self.cam_info.K).reshape((3, 3))
         camera_params = (K[0, 0], K[1, 1], K[0, 2], K[1, 2])
         img_grey = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         tags = self.at_detector.detect(img_grey, True, camera_params, 0.065)
@@ -156,6 +160,7 @@ class ApriltagLocalizationNode(DTROS):
                                                         distCoeffs,
                                                         (640, 480),
                                                         1.0)
+        self.newCameraMatrix = newCameraMatrix
         mapx, mapy = cv2.initUndistortRectifyMap(cameraMatrix,
                                     distCoeffs,
                                     np.eye(3),
